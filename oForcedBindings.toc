@@ -1,0 +1,8 @@
+﻿## Interface: 20300
+## Title: oRape
+## Author: Haste
+## Version: 1.0
+## X-eMail: troeks@gmail.com
+## Notes: Directly rape and destroy key bindings. You probably don't want to use this one...
+
+bindings.lua
