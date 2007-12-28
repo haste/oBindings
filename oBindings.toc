@@ -1,5 +1,5 @@
 ﻿## Interface: 20300
-## Title: oRape
+## Title: oBindings
 ## Author: Haste
 ## Version: 1.0
 ## X-eMail: troeks@gmail.com
