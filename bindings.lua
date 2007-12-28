@@ -12,7 +12,7 @@
         copyright notice, this list of conditions and the following
         disclaimer in the documentation and/or other materials provided
         with the distribution.
-      * Neither the name of oForcedBindings nor the names of its contributors
+      * Neither the name of oBindings nor the names of its contributors
         may be used to endorse or promote products derived from this
         software without specific prior written permission.
 
@@ -29,59 +29,15 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------]]
 
-local addon = CreateFrame"Frame"
 local _G = getfenv(0)
+local print = function(msg) ChatFrame1:AddMessage("|cff33ff99oBindings:|r "..tostring(msg)) end
+local printf = function(f, ...) print(f:format(...)) end
+
+local addon = CreateFrame"Frame"
+local db
 local i = 0
+local base, keys
 local class = select(2, UnitClass"player")
-local profiles = {
-	PRIEST = "shadow",
-	ROGUE = "combatd",
-	WARLOCK = "affliction",
-}
-local profile = profiles[class]
-local keys = {
-	base = [=[
-E		= c|MOVEFORWARD|
-S		= c|TURNLEFT|
-D		= c|MOVEBACKWARD|
-F		= c|TURNRIGHT|
-F8		= m|/run ReloadUI()|
-F9		= c|TOGGLECHARACTER0|
-	]=],
-	PRIEST = {
-		shadow = [=[
-1		= s|Mind Flay|
-2		= s|Shadow Word: Pain|
-3		= s|Mind Blast|
-4		= s|Flash Heal|
-5		= s|Renew|
-6		= s|Heal|
-F5		= s|Power Word: Fortitude|
-F6		= s|Shadow Protection|
-F7		= s|Fear Ward|
-F11		= s|Resurrection|
-F12		= s|Shackle Undead|
-W		= s|Power Word: Shield|
-R		= s|Desperate Prayer|
-T		= s|Fade|
-G		= s|Mana Burn|
-V		= s|Inner Fire|
-X		= s|Shoot|
-^-C		= s|Psychic Scream|
-A-1		= s|Dispel Magic|
-A-2		= s|Abolish Disease|
-		]=],
-	},
-	-- TODO:
-	WARLOCK = {
-		combatd = [=[
-		]=],
-	},
-	ROGUE = {
-		affliction = [=[
-		]=],
-	},
-}
 
 local angrymob = function(key, mod, action)
 	key = key:gsub("^A%-", "ALT-"):gsub("^%^%-", "CTRL-")
@@ -101,14 +57,62 @@ local angrymob = function(key, mod, action)
 	end
 end
 
-addon:SetScript("OnEvent", function()
-	for key, mod, action in keys.base:gmatch"(.-)\t\t=%s(.)|(.-)|\n" do
-		angrymob(key, mod, action)
+local slashHandler = function(str)
+	if(keys[str]) then
+		db = str
+		print"You probably want to reload your UI now..."
+	else
+		if(keys) then
+			local profiles
+			for k in pairs(keys) do
+				profiles = (profiles and ", " or "")..k
+			end
+			printf("[%s] is an invalid profile. Valid profiles: %s", str, profiles)
+		else
+			print"No profiles found."
+		end
+	end
+end
+
+addon.PLAYER_LOGIN = function(self, event)
+	if(base) then
+		for key, mod, action in base:gmatch"(.-)\t\t=%s(.)|(.-)|\n" do
+			angrymob(key, mod, action)
+		end
 	end
 
-	for key, mod, action in keys[class][profile]:gmatch"(.-)\t\t=%s(.)|(.-)|\n" do
+	if(not (keys and keys[db])) then return end
+	for key, mod, action in keys[db]:gmatch"(.-)\t\t=%s(.)|(.-)|\n" do
 		angrymob(key, mod, action)
 	end
+end
+
+addon.ADDON_LOADED = function(self, event, addon)
+	if(addon:match"oBindings") then
+		db = _G.oBindingsDB
+
+		if(self.keys) then
+			keys = self.keys[class]
+			base = self.keys.base
+		end
+
+		if(not db and keys and keys[db]) then
+			for k in pairs(keys[db]) do
+				db = k
+				_G.oBindingsDB = db
+				break
+			end
+		end
+	end
+end
+
+addon:SetScript("OnEvent", function(self, event, ...)
+	self[event](self, event, ...)
 end)
 
 addon:RegisterEvent"PLAYER_LOGIN"
+addon:RegisterEvent"ADDON_LOADED"
+
+_G.SlashCmdList['OBINDINGS_SETPROFILE'] = slashHandler
+_G.SLASH_OBINDINGS_SETPROFILE1 = '/ob'
+_G.oBindings = addon
