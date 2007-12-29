@@ -96,8 +96,8 @@ addon.ADDON_LOADED = function(self, event, addon)
 			base = self.keys.base
 		end
 
-		if(not db and keys and keys[db]) then
-			for k in pairs(keys[db]) do
+		if(not db and keys) then
+			for k in pairs(keys) do
 				db = k
 				_G.oBindingsDB = db
 				break
