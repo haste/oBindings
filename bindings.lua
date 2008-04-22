@@ -40,7 +40,7 @@ local base, keys
 local class = select(2, UnitClass"player")
 
 local angrymob = function(key, mod, action)
-	key = key:gsub("^A%-", "ALT-"):gsub("^%^%-", "CTRL-")
+	key = key:gsub("^A%-", "ALT-"):gsub("^%^%-", "CTRL-"):gsub("^S%-", "SHIFT-")
 	if(mod == "m") then
 		local m = CreateFrame("Button", "oRapeMacro"..i+1, UIParent, "SecureActionButtonTemplate")
 		m:SetAttribute("*type*", "macro")
