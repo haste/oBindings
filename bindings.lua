@@ -38,6 +38,7 @@ local db
 local m = 1
 local base, keys
 local class = select(2, UnitClass"player")
+local macros = {}
 
 local angrymob = function(key, mod, action)
 	if(type(key) == "number") then
@@ -96,8 +97,19 @@ addon.PLAYER_LOGIN = function(self, event)
 			elseif(mod == "M") then
 				PickupMacro(action)
 			elseif(mod == "m") then
-				if(GetMacroIndexByName(key) ~= 0) then DeleteMacro(key) end
-				PickupMacro(CreateMacro(key, 1, action, 1, 1))
+				if(not macros[action]) then
+					for i=1, select(2, GetNumMacros()) do
+						local name = GetMacroInfo(18 + i)
+						if(tonumber(name) == key) then
+							DeleteMacro(18 + i)
+						end
+					end
+					local id = CreateMacro(key, 1, action, 1, 1)
+					PickupMacro(id)
+					macros[action] = id
+				else
+					PickupMacro(macros[action])
+				end
 			elseif(mod == "i") then
 				PickupItem(action)
 			end
