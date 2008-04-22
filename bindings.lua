@@ -40,7 +40,7 @@ local base, keys
 local class = select(2, UnitClass"player")
 
 local angrymob = function(key, mod, action)
-	if(type(key) == "number" and key < 10 and key > 0) then
+	if(type(key) == "number") then
 		SetBinding(key, "ACTIONBUTTON"..key)
 		return
 	end
@@ -105,7 +105,9 @@ addon.PLAYER_LOGIN = function(self, event)
 			PlaceAction(key)
 			ClearCursor()
 
-			angrymob(key)
+			if(key < 10 and key > 0) then
+				angrymob(key)
+			end
 		else
 			angrymob(key, mod, action)
 		end
