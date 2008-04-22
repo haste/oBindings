@@ -95,7 +95,22 @@ addon.PLAYER_LOGIN = function(self, event)
 			if(mod == "s") then
 				PickupSpell(action)
 			elseif(mod == "M") then
-				PickupMacro(action)
+				local gl, ch = GetNumMacros()
+				for i=1, ch do
+					if(action == GetMacroInfo(18 + i)) then
+						PickupMacro(18 + i)
+						break
+					end
+				end
+
+				if(GetCursorInfo() ~= "macro") then
+					for i=1, gl do
+						if(action == GetMacroInfo(i)) then
+							PickupMacro(i)
+							break
+						end
+					end
+				end
 			elseif(mod == "m") then
 				if(not macros[action]) then
 					for i=1, select(2, GetNumMacros()) do
