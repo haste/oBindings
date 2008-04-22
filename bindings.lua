@@ -35,19 +35,24 @@ local printf = function(f, ...) print(f:format(...)) end
 
 local addon = CreateFrame"Frame"
 local db
-local i = 0
+local m = 1
 local base, keys
 local class = select(2, UnitClass"player")
 
 local angrymob = function(key, mod, action)
+	if(type(key) == "number" and key < 10 and key > 0) then
+		SetBinding(key, "ACTIONBUTTON"..key)
+		return
+	end
+
 	key = key:gsub("^A%-", "ALT-"):gsub("^%^%-", "CTRL-"):gsub("^S%-", "SHIFT-")
 	if(mod == "m") then
-		local m = CreateFrame("Button", "oRapeMacro"..i+1, UIParent, "SecureActionButtonTemplate")
-		m:SetAttribute("*type*", "macro")
-		m:SetAttribute("macrotext", action)
-		i = i + 1
+		local macro = CreateFrame("Button", "oRapeMacro"..m, UIParent, "SecureActionButtonTemplate")
+		macro:SetAttribute("*type*", "macro")
+		macro:SetAttribute("macrotext", action)
+		m = m + 1
 
-		SetBindingClick(key, m:GetName())
+		SetBindingClick(key, macro:GetName())
 	elseif(mod == "c") then
 		SetBinding(key, action)
 	elseif(mod == "i") then
@@ -76,14 +81,34 @@ end
 
 addon.PLAYER_LOGIN = function(self, event)
 	if(base) then
-		for key, mod, action in base:gmatch"(.-)\t\t=%s(.)|(.-)|\n" do
+		for key, action in pairs(base) do
+			local mod, action = action:match"(.-)|(.*)$"
 			angrymob(key, mod, action)
 		end
 	end
 
 	if(not (keys and keys[db])) then return end
-	for key, mod, action in keys[db]:gmatch"(.-)\t\t=%s(.)|(.-)|\n" do
-		angrymob(key, mod, action)
+	for key, action in pairs(keys[db]) do
+		local mod, action = action:match"(.-)|(.*)$"
+		if(type(key) == "number") then
+			if(mod == "s") then
+				PickupSpell(action)
+			elseif(mod == "M") then
+				PickupMacro(action)
+			elseif(mod == "m") then
+				if(GetMacroIndexByName(key) ~= 0) then DeleteMacro(key) end
+				PickupMacro(CreateMacro(key, 1, action, 1, 1))
+			elseif(mod == "i") then
+				PickupItem(action)
+			end
+
+			PlaceAction(key)
+			ClearCursor()
+
+			angrymob(key)
+		else
+			angrymob(key, mod, action)
+		end
 	end
 end
 
