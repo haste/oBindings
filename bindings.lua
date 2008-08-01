@@ -1,5 +1,5 @@
 --[[-------------------------------------------------------------------------
-  Copyright (c) 2007, Trond A Ekseth
+  Copyright (c) 2007-2008, Trond A Ekseth
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ local print = function(msg) ChatFrame1:AddMessage("|cff33ff99oBindings:|r "..tos
 local printf = function(f, ...) print(f:format(...)) end
 
 local addon = CreateFrame"Frame"
-local db
 local m = 1
 local base, keys
 local class = select(2, UnitClass"player")
@@ -65,7 +64,7 @@ end
 
 local slashHandler = function(str)
 	if(keys[str]) then
-		db = str
+		oBindingsDB = str
 		print"You probably want to reload your UI now..."
 	else
 		if(keys) then
@@ -88,8 +87,8 @@ addon.PLAYER_LOGIN = function(self, event)
 		end
 	end
 
-	if(not (keys and keys[db])) then return end
-	for key, action in pairs(keys[db]) do
+	if(not (keys and keys[oBindingsDB])) then return end
+	for key, action in pairs(keys[oBindingsDB]) do
 		local mod, action = action:match"(.-)|(.*)$"
 		if(type(key) == "number") then
 			if(mod == "s") then
@@ -143,17 +142,14 @@ end
 
 addon.ADDON_LOADED = function(self, event, addon)
 	if(addon:match"oBindings") then
-		db = _G.oBindingsDB
-
 		if(self.keys) then
 			keys = self.keys[class]
 			base = self.keys.base
 		end
 
-		if(not db and keys) then
+		if(not oBindingsDB and keys) then
 			for k in pairs(keys) do
-				db = k
-				_G.oBindingsDB = db
+				_G.oBindingsDB = k
 				break
 			end
 		end
