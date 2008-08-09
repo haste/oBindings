@@ -119,7 +119,6 @@ addon.PLAYER_LOGIN = function(self, event)
 					local start = offset + select(2, GetNumMacros())
 					for i=start, offset, -1 do
 						if(GetMacroInfo(i) == key) then
-							printf('Deleting %d', i)
 							DeleteMacro(i)
 						end
 					end
