@@ -29,6 +29,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------]]
 
+local wotlk = select(4, GetBuildInfo()) >= 3e4
+
 local _G = getfenv(0)
 local print = function(msg) ChatFrame1:AddMessage("|cff33ff99oBindings:|r "..tostring(msg)) end
 local printf = function(f, ...) print(f:format(...)) end
@@ -112,10 +114,13 @@ addon.PLAYER_LOGIN = function(self, event)
 				end
 			elseif(mod == "m") then
 				if(not macros[action]) then
-					for i=1, select(2, GetNumMacros()) do
-						local name = GetMacroInfo(18 + i)
-						if(tonumber(name) == key) then
-							DeleteMacro(18 + i)
+					local key = 'oB-'..key
+					local offset  = wotlk and 36 or 18
+					local start = offset + select(2, GetNumMacros())
+					for i=start, offset, -1 do
+						if(GetMacroInfo(i) == key) then
+							printf('Deleting %d', i)
+							DeleteMacro(i)
 						end
 					end
 					local id = CreateMacro(key, 1, action, 1, 1)
