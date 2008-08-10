@@ -98,8 +98,9 @@ addon.PLAYER_LOGIN = function(self, event)
 			elseif(mod == "M") then
 				local gl, ch = GetNumMacros()
 				for i=1, ch do
-					if(action == GetMacroInfo(18 + i)) then
-						PickupMacro(18 + i)
+					local offset  = wotlk and 36 or 18
+					if('oB-'..action == GetMacroInfo(offset + i)) then
+						PickupMacro(offset + i)
 						break
 					end
 				end
