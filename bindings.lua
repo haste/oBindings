@@ -1,5 +1,10 @@
-local print = function(msg) ChatFrame1:AddMessage("|cff33ff99oBindings:|r "..tostring(msg)) end
-local printf = function(f, ...) print(f:format(...)) end
+local print = function(...)
+	return print('|cff33ff99oBindings:|r', ...)
+end
+
+local printf = function(f, ...)
+	return print(f:format(...))
+end
 
 local addon = CreateFrame"Frame"
 local m = 1
