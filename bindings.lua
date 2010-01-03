@@ -1,6 +1,3 @@
-local wotlk = select(4, GetBuildInfo()) >= 3e4
-
-local _G = getfenv(0)
 local print = function(msg) ChatFrame1:AddMessage("|cff33ff99oBindings:|r "..tostring(msg)) end
 local printf = function(f, ...) print(f:format(...)) end
 
@@ -67,7 +64,7 @@ addon.PLAYER_LOGIN = function(self, event)
 			elseif(mod == "M") then
 				local gl, ch = GetNumMacros()
 				for i=1, ch do
-					local offset  = wotlk and 36 or 18
+					local offset  = 36
 					if('oB-'..action == GetMacroInfo(offset + i)) then
 						PickupMacro(offset + i)
 						break
@@ -85,7 +82,7 @@ addon.PLAYER_LOGIN = function(self, event)
 			elseif(mod == "m") then
 				if(not macros[action]) then
 					local key = 'oB-'..key
-					local offset  = wotlk and 36 or 18
+					local offset  = 36
 					local start = offset + select(2, GetNumMacros())
 					for i=start, offset, -1 do
 						if(GetMacroInfo(i) == key) then
