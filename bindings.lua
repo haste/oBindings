@@ -6,6 +6,28 @@ local printf = function(f, ...)
 	return print(f:format(...))
 end
 
+local states = {
+	alt = '[mod:alt]',
+	ctrl = '[mod:ctrl]',
+	shift = '[mod:shift]',
+
+	vehicle = '[@vehicle,exists,bonusbar:5]',
+
+	-- No bar1 as that's our default anyway.
+	bar2 = '[bar:2]',
+	bar3 = '[bar:3]',
+	bar4 = '[bar:4]',
+	bar5 = '[bar:5]',
+	bar6 = '[bar:6]',
+
+	mindControl = '[bonusbar:5]',
+
+	stealth = '[bonusbar:1,stealth]',
+	shadowDance = '[form:3]',
+
+	shadow = '[bonusbar:1]',
+}
+
 local addon = CreateFrame"Frame"
 local m = 1
 local base, keys
