@@ -111,7 +111,7 @@ local typeTable = {
 }
 
 local bindKey = function(key, action, mod)
-	if(mod) then
+	if(mod and (mod == 'alt' or mod == 'ctrl' or mod == 'shift')) then
 		key = mod:upper() .. '-' .. key
 	end
 
@@ -122,9 +122,9 @@ local bindKey = function(key, action, mod)
 		local btn = createButton(key)
 		ty = typeTable[ty]
 
-		btn:SetAttribute('ob-base-type', ty)
+		btn:SetAttribute(string.format('ob-%s-type', mod or 'base'), ty)
 		ty = (ty == 'macro' and 'macrotext') or ty
-		btn:SetAttribute('ob-base-attribute', ty .. ',' .. action)
+		btn:SetAttribute(string.format('ob-%s-attribute', mod or 'base'), ty .. ',' .. action)
 
 		SetBindingClick(key, btn:GetName())
 	end
