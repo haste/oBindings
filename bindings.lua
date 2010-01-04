@@ -150,7 +150,7 @@ function _NS:LoadBindings(name)
 			end
 		end
 	else
-		print('no bindings found')
+		print('No bindings found')
 	end
 
 	RegisterStateDriver(_STATE, "page", _states .. states.possess .. 'possess;' .. _BASE)
