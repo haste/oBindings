@@ -149,8 +149,6 @@ function _NS:LoadBindings(name)
 				end
 			end
 		end
-	else
-		print('No bindings found')
 	end
 
 	RegisterStateDriver(_STATE, "page", _states .. states.possess .. 'possess;' .. _BASE)
@@ -160,21 +158,52 @@ _NS:SetScript('OnEvent', function(self, event, ...)
 	return self[event](self, event, ...)
 end)
 
+local talentGroup
 function _NS:ADDON_LOADED(event, addon)
 	-- For the possess madness.
 	if(addon == _NAME) then
 		for i=0,9 do
 			createButton(i)
 		end
+
+		self:UnregisterEvent("ADDON_LOADED")
+		self.ADDON_LOADED = nil
 	end
 end
-
-function _NS:UPDATE_BINDINGS(event)
-	self:UnregisterEvent'UPDATE_BINDINGS'
-	self:LoadBindings(oBindingsDB)
-end
-
-_NS:RegisterEvent"UPDATE_BINDINGS"
 _NS:RegisterEvent"ADDON_LOADED"
+
+function _NS:UPDATE_BINDINGS()
+	local talentString
+	local mostPoints = -1
+	local mostPointsName
+
+	for i=1, GetNumTalentTabs() do
+		local name, _, points = GetTalentTabInfo(i)
+		talentString = (talentString and talentString .. '/' or '') .. points
+
+		if(points > mostPoints) then
+			mostPoints = points
+			mostPointsName = name
+		end
+	end
+
+	self:UnregisterEvent'UPDATE_BINDINGS'
+	if(_BINDINGS[talentString]) then
+		self:LoadBindings(talentString)
+	elseif(_BINDINGS[mostPointsName]) then
+		self:LoadBindings(mostPointsName)
+	else
+		print('Unable to find any bindings.')
+	end
+end
+_NS:RegisterEvent"UPDATE_BINDINGS"
+
+function _NS:PLAYER_TALENT_UPDATE()
+	if(talentGroup == GetActiveTalentGroup()) then return end
+
+	talentGroup = GetActiveTalentGroup()
+	self:UPDATE_BINDINGS()
+end
+_NS:RegisterEvent"PLAYER_TALENT_UPDATE"
 
 _G[_NAME] = _NS
