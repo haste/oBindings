@@ -1,3 +1,5 @@
+if(select(2, UnitClass'player') ~= 'PRIEST') then return end
+
 local _, bindings = ...
 
 local healBase = {
