@@ -11,8 +11,6 @@ local states = {
 	ctrl = '[mod:ctrl]',
 	shift = '[mod:shift]',
 
-	vehicle = '[@vehicle,exists,bonusbar:5]',
-
 	-- No bar1 as that's our default anyway.
 	bar2 = '[bar:2]',
 	bar3 = '[bar:3]',
@@ -20,7 +18,7 @@ local states = {
 	bar5 = '[bar:5]',
 	bar6 = '[bar:6]',
 
-	mindControl = '[bonusbar:5]',
+	possess = '[bonusbar:5]',
 
 	stealth = '[bonusbar:1,stealth]',
 	shadowDance = '[form:3]',
@@ -28,139 +26,155 @@ local states = {
 	shadow = '[bonusbar:1]',
 }
 
-local addon = CreateFrame"Frame"
-local m = 1
-local base, keys
-local class = select(2, UnitClass"player")
-local macros = {}
+local _NAME = ...
+local _NS = CreateFrame'Frame'
 
-local angrymob = function(key, mod, action)
-	if(type(key) == "number") then
-		SetBinding(key, "ACTIONBUTTON"..key)
-		return
+local _BINDINGS = {}
+local _BUTTONS = {}
+
+local _STATE = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+local _BASE = 'base'
+
+_STATE:SetAttribute("_onstate-page", [[
+   control:ChildUpdate('state-changed', newstate)
+]])
+
+function _NS:RegisterKeyBindings(name, ...)
+	local bindings = {}
+	
+	for i=1, select('#', ...) do
+		local tbl = select(i, ...)
+		for key, action in next, tbl do
+			if(type(action) == 'table') then
+				for mod, modAction in next, action do
+					if(not bindings[key]) then
+						bindings[key] = {}
+					end
+
+					bindings[key][mod] = modAction
+				end
+			else
+				bindings[key] = action
+			end
+		end
 	end
 
-	key = key:gsub("^A%-", "ALT-"):gsub("^%^%-", "CTRL-"):gsub("^S%-", "SHIFT-")
-	if(mod == "m") then
-		local macro = CreateFrame("Button", "oRapeMacro"..m, UIParent, "SecureActionButtonTemplate")
-		macro:SetAttribute("*type*", "macro")
-		macro:SetAttribute("macrotext", action)
-		m = m + 1
+	_BINDINGS[name] = bindings
+end
 
-		SetBindingClick(key, macro:GetName())
-	elseif(mod == "c") then
-		SetBinding(key, action)
-	elseif(mod == "i") then
-		SetBindingItem(key, action)
-	elseif(mod == "s") then
-		SetBindingSpell(key, action)
+local createButton = function(key)
+	if(_BUTTONS[key]) then
+		return _BUTTONS[key]
+	end
+
+	local btn = CreateFrame("Button", 'oBindings' .. key, _STATE, "SecureActionButtonTemplate");
+	btn:SetAttribute('_childupdate-state-changed', [[
+	   local type = message and self:GetAttribute('ob-' .. message .. '-type') or self:GetAttribute('ob-base-type')
+
+	   -- It's possible to have buttons without a default state.
+	   if(type) then
+	      local attr, attrData = strsplit(',', (
+	         message and self:GetAttribute('ob-' .. message .. '-attribute') or
+	         self:GetAttribute('ob-base-attribute')
+	      ))
+	      self:SetAttribute('type',type)
+	      self:SetAttribute(attr, attrData)
+	  end
+	]])
+
+	if(tonumber(key)) then
+		btn:SetAttribute('ob-possess-type', 'action')
+		btn:SetAttribute('ob-possess-attribute', 'action,' .. (key + 120))
+	end
+
+	_BUTTONS[key] = btn
+	return btn
+end
+
+local clearButton = function(key)
+	local btn = _BUTTONS[key]
+	if(btn) then
+		for key in next, states do
+			if(key ~= 'possess') then
+				btn:SetAttribute(string.format('ob-%s-type', key), nil)
+				key = (key == 'macro' and 'macrotext') or key
+				btn:SetAttribute(string.format('ob-%s-attribute', key), nil)
+			end
+		end
 	end
 end
 
-local slashHandler = function(str)
-	if(keys[str]) then
-		oBindingsDB = str
-		print"You probably want to reload your UI now..."
+local typeTable = {
+	s = 'spell',
+	i = 'item',
+	m = 'macro',
+}
+
+local bindKey = function(key, action, mod)
+	if(mod) then
+		key = mod:upper() .. '-' .. key
+	end
+
+	local ty, action = string.split('|', action)
+	if(not action) then
+		SetBinding(key, ty)
 	else
-		if(keys) then
-			local profiles
-			for k in pairs(keys) do
-				profiles = (profiles and ", " or "")..k
-			end
-			printf("[%s] is an invalid profile. Valid profiles: %s", str, profiles)
-		else
-			print"No profiles found."
-		end
+		local btn = createButton(key)
+		ty = typeTable[ty]
+
+		btn:SetAttribute('ob-base-type', ty)
+		ty = (ty == 'macro' and 'macrotext') or ty
+		btn:SetAttribute('ob-base-attribute', ty .. ',' .. action)
+
+		SetBindingClick(key, btn:GetName())
 	end
 end
 
-addon.PLAYER_LOGIN = function(self, event)
-	if(base) then
-		for key, action in pairs(base) do
-			local mod, action = action:match"(.-)|(.*)$"
-			angrymob(key, mod, action)
+function _NS:LoadBindings(name)
+	local bindings = _BINDINGS[name]
+	local _states = ''
+
+	if(bindings) then
+		for _, btn in next, _BUTTONS do
+			clearButton(btn)
 		end
+
+		for key, action in next, bindings do
+			if(type(action) ~= 'table') then
+				bindKey(key, action)
+			elseif(states[key]) then
+				_states = _states .. states[key] .. key .. ';'
+				for modKey, action in next, action do
+					bindKey(modKey, action, key)
+				end
+			end
+		end
+	else
+		print('no bindings found')
 	end
 
-	if(not (keys and keys[oBindingsDB])) then return end
-	for key, action in pairs(keys[oBindingsDB]) do
-		local mod, action = action:match"(.-)|(.*)$"
-		if(type(key) == "number") then
-			if(mod == "s") then
-				PickupSpell(action)
-			elseif(mod == "M") then
-				local gl, ch = GetNumMacros()
-				for i=1, ch do
-					local offset  = 36
-					if('oB-'..action == GetMacroInfo(offset + i)) then
-						PickupMacro(offset + i)
-						break
-					end
-				end
-
-				if(GetCursorInfo() ~= "macro") then
-					for i=1, gl do
-						if(action == GetMacroInfo(i)) then
-							PickupMacro(i)
-							break
-						end
-					end
-				end
-			elseif(mod == "m") then
-				if(not macros[action]) then
-					local key = 'oB-'..key
-					local offset  = 36
-					local start = offset + select(2, GetNumMacros())
-					for i=start, offset, -1 do
-						if(GetMacroInfo(i) == key) then
-							DeleteMacro(i)
-						end
-					end
-					local id = CreateMacro(key, 1, action, 1, 1)
-					PickupMacro(id)
-					macros[action] = id
-				else
-					PickupMacro(macros[action])
-				end
-			elseif(mod == "i") then
-				PickupItem(action)
-			end
-
-			PlaceAction(key)
-			ClearCursor()
-
-			if(key < 10 and key > 0) then
-				angrymob(key)
-			end
-		else
-			angrymob(key, mod, action)
-		end
-	end
+	RegisterStateDriver(_STATE, "page", _states .. states.possess .. 'possess;' .. _BASE)
 end
 
-addon.ADDON_LOADED = function(self, event, addon)
-	if(addon:match"oBindings") then
-		if(self.keys) then
-			keys = self.keys[class]
-			base = self.keys.base
-		end
-
-		if(not oBindingsDB and keys) then
-			for k in pairs(keys) do
-				_G.oBindingsDB = k
-				break
-			end
-		end
-	end
-end
-
-addon:SetScript("OnEvent", function(self, event, ...)
-	self[event](self, event, ...)
+_NS:SetScript('OnEvent', function(self, event, ...)
+	return self[event](self, event, ...)
 end)
 
-addon:RegisterEvent"PLAYER_LOGIN"
-addon:RegisterEvent"ADDON_LOADED"
+function _NS:ADDON_LOADED(event, addon)
+	-- For the possess madness.
+	if(addon == _NAME) then
+		for i=0,9 do
+			createButton(i)
+		end
+	end
+end
 
-_G.SlashCmdList['OBINDINGS_SETPROFILE'] = slashHandler
-_G.SLASH_OBINDINGS_SETPROFILE1 = '/ob'
-_G.oBindings = addon
+function _NS:UPDATE_BINDINGS(event)
+	self:UnregisterEvent'UPDATE_BINDINGS'
+	self:LoadBindings(oBindingsDB)
+end
+
+_NS:RegisterEvent"UPDATE_BINDINGS"
+_NS:RegisterEvent"ADDON_LOADED"
+
+_G[_NAME] = _NS

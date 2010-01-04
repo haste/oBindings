@@ -7,3 +7,5 @@
 ## SavedVariablesPerCharacter: oBindingsDB
 
 bindings.lua
+bindings\base.lua
+bindings\priest.lua
