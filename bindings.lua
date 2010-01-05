@@ -135,6 +135,7 @@ function _NS:LoadBindings(name)
 	local _states = ''
 
 	if(bindings) then
+		oBindingsDB = name
 		for _, btn in next, _BUTTONS do
 			clearButton(btn)
 		end
@@ -192,19 +193,21 @@ function _NS:UPDATE_BINDINGS()
 		self:LoadBindings(talentString)
 	elseif(_BINDINGS[mostPointsName]) then
 		self:LoadBindings(mostPointsName)
+	elseif(oBindingsDB) then
+		self:LoadBindings(oBindingsDB)
 	else
 		print('Unable to find any bindings.')
 	end
 end
 _NS:RegisterEvent"UPDATE_BINDINGS"
 
-function _NS:PLAYER_TALENT_UPDATE()
+function _NS:ACTIVE_TALENT_GROUP_CHANGED()
 	if(talentGroup == GetActiveTalentGroup()) then return end
 
 	talentGroup = GetActiveTalentGroup()
-	self:UPDATE_BINDINGS()
+	self:UPDATE_BINDINGS(event)
 end
-_NS:RegisterEvent"PLAYER_TALENT_UPDATE"
+_NS:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
 
 do
 	-- Stolen from Tuller's Dominos, with some changes.
