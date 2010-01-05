@@ -135,6 +135,7 @@ function _NS:LoadBindings(name)
 	local _states = ''
 
 	if(bindings) then
+		print("Switching to set:", name)
 		oBindingsDB = name
 		for _, btn in next, _BUTTONS do
 			clearButton(btn)
