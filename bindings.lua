@@ -32,11 +32,20 @@ local _NS = CreateFrame'Frame'
 local _BINDINGS = {}
 local _BUTTONS = {}
 
+local _CALLBACKS = {}
+
 local _STATE = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 local _BASE = 'base'
 
+function _STATE:Callbacks(state)
+	for _, func in next, _CALLBACKS do
+		func(self, state)
+	end
+end
+
 _STATE:SetAttribute("_onstate-page", [[
    control:ChildUpdate('state-changed', newstate)
+   control:CallMethod('Callbacks', newstate)
 ]])
 
 function _NS:RegisterKeyBindings(name, ...)
@@ -60,6 +69,10 @@ function _NS:RegisterKeyBindings(name, ...)
 	end
 
 	_BINDINGS[name] = bindings
+end
+
+function _NS:RegisterCallback(func)
+	table.insert(_CALLBACKS, func)
 end
 
 local createButton = function(key)
