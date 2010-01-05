@@ -9,3 +9,4 @@
 bindings.lua
 bindings\base.lua
 bindings\priest.lua
+bindings\warlock.lua
