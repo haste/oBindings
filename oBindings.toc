@@ -4,6 +4,7 @@
 ## Version: 1.0
 ## X-eMail: troeks@gmail.com
 ## Notes: Binding management for mad people.
+## SavedVariablesPerCharacter: oBindingsDB
 
 bindings.lua
 bindings\base.lua
