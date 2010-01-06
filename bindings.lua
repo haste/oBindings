@@ -90,7 +90,7 @@ local createButton = function(key)
 	      local attr, attrData = strsplit(',', (
 	         message and self:GetAttribute('ob-' .. message .. '-attribute') or
 	         self:GetAttribute('ob-base-attribute')
-	      ))
+	      ), 2)
 	      self:SetAttribute('type',type)
 	      self:SetAttribute(attr, attrData)
 	  end
