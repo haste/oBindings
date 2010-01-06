@@ -28,6 +28,7 @@ local states = {
 
 local _NAME = ...
 local _NS = CreateFrame'Frame'
+_G[_NAME] = _NS
 
 local _BINDINGS = {}
 local _BUTTONS = {}
@@ -270,5 +271,3 @@ do
 		PlayerTalentFrame:UnregisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
 	end)
 end
-
-_G[_NAME] = _NS
