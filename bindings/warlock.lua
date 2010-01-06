@@ -26,6 +26,7 @@ local affliction = {
 		's|Seed of Corruption',
 		's|Drain Life',
 		's|Drain Mana',
+		'm|/petattack',
 	},
 
 	shift = {

@@ -21,7 +21,7 @@ local healBase = {
 
 	alt = {
 		's|Dispel Magic',
-		's|Abolish Disease',
+		's|Cure Disease',
 	},
 
 	ctrl = {
