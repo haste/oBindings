@@ -168,6 +168,11 @@ function _NS:LoadBindings(name)
 	end
 
 	RegisterStateDriver(_STATE, "page", _states .. states.possess .. 'possess;' .. _BASE)
+	_STATE:Execute(([[
+		local state = '%s'
+		control:ChildUpdate('state-changed', state)
+		control:CallMethod('Callbacks', state)
+	]]):format(_STATE:GetAttribute'state-page'))
 end
 
 _NS:SetScript('OnEvent', function(self, event, ...)
