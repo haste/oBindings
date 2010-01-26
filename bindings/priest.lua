@@ -4,12 +4,11 @@ local _, bindings = ...
 
 local healBase = {
 	's|Prayer of Mending',
-	's|Penance',
-	's|Prayer of Healing',
-	's|Holy Fire',
-	's|Smite',
-	's|Renew',
-	's|Hymn of Hope',
+	[3] = 's|Prayer of Healing',
+	[4] = 's|Holy Fire',
+	[5] = 's|Smite',
+	[6] = 's|Renew',
+	[7] = 's|Hymn of Hope',
 
 	shift = {
 		[4] = 's|Holy Nova',
@@ -51,6 +50,7 @@ local healBase = {
 }
 
 local disc = {
+	[2] = 's|Penance',
 	H = 's|Power Infusion',
 
 	ctrl = {
@@ -59,6 +59,8 @@ local disc = {
 }
 
 local holy = {
+	[2] = 's|Circle of Healing',
+
 	ctrl = {
 		[3] = 's|Guardian Spirit',
 	},

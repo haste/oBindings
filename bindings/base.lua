@@ -2,15 +2,21 @@ local _, bindings = ...
 
 bindings.base = {
 	F = "MOVEFORWARD",
-	R = "TURNLEFT",
+	R = "STRAFELEFT",
 	S = "MOVEBACKWARD",
-	T = "TURNRIGHT",
+	T = "STRAFERIGHT",
 
 	B = "OPENALLBAGS",
 
 	[';'] = "TOGGLESPELLBOOK",
 
-	["CTRL-V"] = "m|/mount",
+	ctrl = {
+		V = 'm|/mount'
+	},
+
+	shift = {
+		V = "m|/cast Traveler's Tundra Mammoth"
+	},
 
 	F8 = "m|/run ReloadUI()",
 	F9 = "TOGGLECHARACTER0",
