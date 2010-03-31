@@ -148,9 +148,9 @@ function _NS:LoadBindings(name)
 	local bindings = _BINDINGS[name]
 	local _states = ''
 
-	if(bindings) then
-		print("Switching to set:", name)
+	if(bindings and self.activeBindings ~= name) then
 		oBindingsDB = name
+		self.activeBindings = name
 		for _, btn in next, _BUTTONS do
 			clearButton(btn)
 		end
@@ -189,16 +189,27 @@ function _NS:ADDON_LOADED(event, addon)
 
 		self:UnregisterEvent("ADDON_LOADED")
 		self.ADDON_LOADED = nil
+
+		if(not self.activeBindings) then
+			self:SPELL_UPDATE_USABLE()
+		end
 	end
 end
 _NS:RegisterEvent"ADDON_LOADED"
 
-function _NS:UPDATE_BINDINGS()
+function _NS:SPELL_UPDATE_USABLE()
+	local numTabs = GetNumTalentTabs()
 	local talentString
 	local mostPoints = -1
 	local mostPointsName
 
-	for i=1, GetNumTalentTabs() do
+	-- SUS fire so often that we can just drop out if we don't have talent
+	-- information yet.
+	if(numTabs == 0) then
+		return
+	end
+
+	for i=1, numTabs do
 		local name, _, points = GetTalentTabInfo(i)
 		talentString = (talentString and talentString .. '/' or '') .. points
 
@@ -208,7 +219,7 @@ function _NS:UPDATE_BINDINGS()
 		end
 	end
 
-	self:UnregisterEvent'UPDATE_BINDINGS'
+	self:UnregisterEvent'SPELL_UPDATE_USABLE'
 	if(_BINDINGS[talentString]) then
 		self:LoadBindings(talentString)
 	elseif(_BINDINGS[mostPointsName]) then
@@ -219,14 +230,15 @@ function _NS:UPDATE_BINDINGS()
 		print('Unable to find any bindings.')
 	end
 end
-_NS:RegisterEvent"UPDATE_BINDINGS"
+_NS:RegisterEvent"SPELL_UPDATE_USABLE"
 
 function _NS:ACTIVE_TALENT_GROUP_CHANGED()
 	if(talentGroup == GetActiveTalentGroup()) then return end
 
 	talentGroup = GetActiveTalentGroup()
-	self:UPDATE_BINDINGS(event)
+	self:SPELL_UPDATE_USABLE()
 end
+
 _NS:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
 
 do
