@@ -105,15 +105,12 @@ local createButton = function(key)
 	return btn
 end
 
-local clearButton = function(key)
-	local btn = _BUTTONS[key]
-	if(btn) then
-		for key in next, states do
-			if(key ~= 'possess') then
-				btn:SetAttribute(string.format('ob-%s-type', key), nil)
-				key = (key == 'macro' and 'macrotext') or key
-				btn:SetAttribute(string.format('ob-%s-attribute', key), nil)
-			end
+local clearButton = function(btn)
+	for key in next, states do
+		if(key ~= 'possess') then
+			btn:SetAttribute(string.format('ob-%s-type', key), nil)
+			key = (key == 'macro' and 'macrotext') or key
+			btn:SetAttribute(string.format('ob-%s-attribute', key), nil)
 		end
 	end
 end
@@ -125,13 +122,14 @@ local typeTable = {
 }
 
 local bindKey = function(key, action, mod)
+	local modKey
 	if(mod and (mod == 'alt' or mod == 'ctrl' or mod == 'shift')) then
-		key = mod:upper() .. '-' .. key
+		modKey = mod:upper() .. '-' .. key
 	end
 
 	local ty, action = string.split('|', action)
 	if(not action) then
-		SetBinding(key, ty)
+		SetBinding(modKey or key, ty)
 	else
 		local btn = createButton(key)
 		ty = typeTable[ty]
@@ -140,7 +138,7 @@ local bindKey = function(key, action, mod)
 		ty = (ty == 'macro' and 'macrotext') or ty
 		btn:SetAttribute(string.format('ob-%s-attribute', mod or 'base'), ty .. ',' .. action)
 
-		SetBindingClick(key, btn:GetName())
+		SetBindingClick(modKey or key, btn:GetName())
 	end
 end
 
@@ -166,14 +164,14 @@ function _NS:LoadBindings(name)
 				end
 			end
 		end
-	end
 
-	RegisterStateDriver(_STATE, "page", _states .. states.possess .. 'possess;' .. _BASE)
-	_STATE:Execute(([[
-		local state = '%s'
-		control:ChildUpdate('state-changed', state)
-		control:CallMethod('Callbacks', state)
-	]]):format(_STATE:GetAttribute'state-page'))
+		RegisterStateDriver(_STATE, "page", _states .. states.possess .. 'possess;' .. _BASE)
+		_STATE:Execute(([[
+		   local state = '%s'
+		   control:ChildUpdate('state-changed', state)
+		   control:CallMethod('Callbacks', state)
+		]]):format(_STATE:GetAttribute'state-page'))
+	end
 end
 
 _NS:SetScript('OnEvent', function(self, event, ...)
