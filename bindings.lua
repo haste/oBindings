@@ -23,6 +23,16 @@ local states = {
 
 	'shadow|[bonusbar:1]',
 
+	'bear|[form:1]',
+	'cat|[form:3]',
+	'boomkintree|[form:5]',
+
+	'battle|[stance:1]',
+	'defensive|[stance:2]',
+	'berserker|[stance:3]',
+
+	'demon|[form:5]',
+
 	'possess|[bonusbar:5]',
 }
 -- it won't change anyway~
