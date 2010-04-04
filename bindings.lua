@@ -31,7 +31,7 @@ local states = {
 	'defensive|[stance:2]',
 	'berserker|[stance:3]',
 
-	'demon|[form:5]',
+	'demon|[form:2]',
 
 	'possess|[bonusbar:5]',
 }
