@@ -25,7 +25,7 @@ local states = {
 
 	'bear|[form:1]',
 	'cat|[form:3]',
-	'boomkintree|[form:5]',
+	'moonkintree|[form:5]',
 
 	'battle|[stance:1]',
 	'defensive|[stance:2]',
