@@ -227,7 +227,7 @@ function _NS:UPDATE_BINDINGS()
 	local mostPointsName
 
 	for i=1, numTabs do
-		local name, _, points = GetTalentTabInfo(i)
+		local id, name, _, _, points = GetTalentTabInfo(i)
 		talentString = (talentString and talentString .. '/' or '') .. points
 
 		if(points > mostPoints) then
