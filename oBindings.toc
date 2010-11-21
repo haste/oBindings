@@ -1,4 +1,4 @@
-## Interface: 30300
+## Interface: 40000
 ## Title: oBindings
 ## Author: Haste
 ## Version: 1.0
@@ -11,3 +11,4 @@ bindings\base.lua
 bindings\priest.lua
 bindings\warlock.lua
 bindings\rogue.lua
+bindings\shaman.lua
