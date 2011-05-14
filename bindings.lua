@@ -220,11 +220,15 @@ function _NS:ADDON_LOADED(event, addon)
 end
 _NS:RegisterEvent"ADDON_LOADED"
 
-function _NS:UPDATE_BINDINGS()
+function _NS:PLAYER_TALENT_UPDATE()
 	local numTabs = GetNumTalentTabs()
 	local talentString
 	local mostPoints = -1
 	local mostPointsName
+
+	if(numTabs == 0) then
+		return
+	end
 
 	for i=1, numTabs do
 		local id, name, _, _, points = GetTalentTabInfo(i)
@@ -236,7 +240,7 @@ function _NS:UPDATE_BINDINGS()
 		end
 	end
 
-	self:UnregisterEvent'UPDATE_BINDINGS'
+	self:UnregisterEvent'PLAYER_TALENT_UPDATE'
 	if(_BINDINGS[talentString]) then
 		self:LoadBindings(talentString)
 	elseif(_BINDINGS[mostPointsName]) then
@@ -247,13 +251,13 @@ function _NS:UPDATE_BINDINGS()
 		print('Unable to find any bindings.')
 	end
 end
-_NS:RegisterEvent"UPDATE_BINDINGS"
+_NS:RegisterEvent"PLAYER_TALENT_UPDATE"
 
 function _NS:ACTIVE_TALENT_GROUP_CHANGED()
 	if(talentGroup == GetActiveTalentGroup()) then return end
 
 	talentGroup = GetActiveTalentGroup()
-	self:UPDATE_BINDINGS()
+	self:PLAYER_TALENT_UPDATE()
 end
 _NS:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
 
