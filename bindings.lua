@@ -169,7 +169,6 @@ function _NS:LoadBindings(name)
 
 	if(bindings and self.activeBindings ~= name) then
 		print("Switching to set:", name)
-		oBindingsDB = name
 		self.activeBindings = name
 		for _, btn in next, _BUTTONS do
 			clearButton(btn)
@@ -245,8 +244,6 @@ function _NS:PLAYER_TALENT_UPDATE()
 		self:LoadBindings(talentString)
 	elseif(_BINDINGS[mostPointsName]) then
 		self:LoadBindings(mostPointsName)
-	elseif(oBindingsDB) then
-		self:LoadBindings(oBindingsDB)
 	else
 		print('Unable to find any bindings.')
 	end
