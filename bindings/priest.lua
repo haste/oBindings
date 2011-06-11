@@ -74,7 +74,10 @@ local holy = {
 	['`'] = 's|Leap of Faith',
 
 	BUTTON4 = 's|Lightwell',
-	BUTTON5 = 's|Chakra',
+
+	shift = {
+		V = 's|Chakra',
+	},
 
 	ctrl = {
 		[3] = 's|Guardian Spirit',
