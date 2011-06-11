@@ -92,6 +92,8 @@ local destruction = {
 	F11 = 's|Ritual of Summoning',
 	F12 = 's|Enslave Demon',
 
+	BUTTON4 = 'm|/petattack',
+	BUTTON5 = 'm|/swapactionbar 1 2',
 
 	shift = {
 		's|Immolate',
