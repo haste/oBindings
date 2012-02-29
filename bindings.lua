@@ -143,6 +143,11 @@ local typeTable = {
 	m = 'macro',
 }
 
+local macroTable = {
+	sf = '/cast [@focus,exists][] %s',
+	sm = '/cast [@mouseover,exists][] %s',
+}
+
 local bindKey = function(key, action, mod)
 	local modKey
 	if(mod and (mod == 'alt' or mod == 'ctrl' or mod == 'shift')) then
@@ -154,11 +159,15 @@ local bindKey = function(key, action, mod)
 		SetBinding(modKey or key, ty)
 	else
 		local btn = createButton(key)
-		ty = typeTable[ty]
-
-		btn:SetAttribute(string.format('ob-%s-type', mod or 'base'), ty)
-		ty = (ty == 'macro' and 'macrotext') or ty
-		btn:SetAttribute(string.format('ob-%s-attribute', mod or 'base'), ty .. ',' .. action)
+		if(macroTable[ty]) then
+			btn:SetAttribute(string.format('ob-%s-type', mod or 'base'), 'macro')
+			btn:SetAttribute(string.format('ob-%s-attribute', mod or 'base'), 'macrotext,' .. string.format(macroTable[ty], action))
+		else
+			ty = typeTable[ty]
+			btn:SetAttribute(string.format('ob-%s-type', mod or 'base'), ty)
+			ty = (ty == 'macro' and 'macrotext') or ty
+			btn:SetAttribute(string.format('ob-%s-attribute', mod or 'base'), ty .. ',' .. action)
+		end
 
 		SetBindingClick(modKey or key, btn:GetName())
 	end
