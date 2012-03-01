@@ -25,9 +25,10 @@ local states = {
 
 	'shadow|[bonusbar:1]',
 
-	'bear|[form:1]',
-	'cat|[form:3]',
-	'moonkintree|[form:5]',
+	'cat|[bonusbar:1]',
+	'tree|[bonusbar:2]',
+	'bear|[bonusbar:3]',
+	'moonkin|[bonusbar:4]',
 
 	'battle|[stance:1]',
 	'defensive|[stance:2]',
