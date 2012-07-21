@@ -11,7 +11,7 @@ local states = {
 	'ctrl|[mod:ctrl]',
 	'shift|[mod:shift]',
 
-	'possess|[bonusbar:5]',
+	'possess|[vehicleui]',
 
 	-- No bar1 as that's our default anyway.
 	'bar2|[bar:2]',
@@ -119,7 +119,7 @@ local createButton = function(key)
 
 	if(tonumber(key)) then
 		btn:SetAttribute('ob-possess-type', 'action')
-		btn:SetAttribute('ob-possess-attribute', 'action,' .. (key + 120))
+		btn:SetAttribute('ob-possess-attribute', 'action,' .. (key + 132))
 	end
 
 	_BUTTONS[key] = btn
