@@ -168,7 +168,6 @@ function _NS:LoadBindings(name)
 	local bindings = _BINDINGS[name]
 
 	if(bindings and self.activeBindings ~= name) then
-		print("Switching to set:", name)
 		self.activeBindings = name
 		for _, btn in next, _BUTTONS do
 			clearButton(btn)
@@ -225,6 +224,7 @@ function _NS:PLAYER_TALENT_UPDATE()
 		self:UnregisterEvent'PLAYER_TALENT_UPDATE'
 
 		if(_BINDINGS[specName]) then
+			print('Switching to set:', specName)
 			self:LoadBindings(specName)
 		else
 			print('Unable to find any bindings.')
