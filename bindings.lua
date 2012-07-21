@@ -205,7 +205,6 @@ _NS:SetScript('OnEvent', function(self, event, ...)
 	return self[event](self, event, ...)
 end)
 
-local talentGroup
 function _NS:ADDON_LOADED(event, addon)
 	-- For the possess madness.
 	if(addon == _NAME) then
@@ -213,47 +212,32 @@ function _NS:ADDON_LOADED(event, addon)
 			createButton(i)
 		end
 
-		self:UnregisterEvent("ADDON_LOADED")
+		self:UnregisterEvent(event)
 		self.ADDON_LOADED = nil
 	end
 end
 _NS:RegisterEvent"ADDON_LOADED"
 
 function _NS:PLAYER_TALENT_UPDATE()
-	local numTabs = GetNumTalentTabs()
-	local talentString
-	local mostPoints = -1
-	local mostPointsName
+	local _, specName = GetSpecializationInfo(GetSpecialization())
 
-	if(numTabs == 0) then
-		return
-	end
+	if(specName) then
+		self:UnregisterEvent'PLAYER_TALENT_UPDATE'
 
-	for i=1, numTabs do
-		local id, name, _, _, points = GetTalentTabInfo(i)
-		talentString = (talentString and talentString .. '/' or '') .. points
-
-		if(points > mostPoints) then
-			mostPoints = points
-			mostPointsName = name
+		if(_BINDINGS[specName]) then
+			self:LoadBindings(specName)
+		else
+			print('Unable to find any bindings.')
 		end
-	end
-
-	self:UnregisterEvent'PLAYER_TALENT_UPDATE'
-	if(_BINDINGS[talentString]) then
-		self:LoadBindings(talentString)
-	elseif(_BINDINGS[mostPointsName]) then
-		self:LoadBindings(mostPointsName)
-	else
-		print('Unable to find any bindings.')
 	end
 end
 _NS:RegisterEvent"PLAYER_TALENT_UPDATE"
 
-function _NS:ACTIVE_TALENT_GROUP_CHANGED()
-	if(talentGroup == GetActiveTalentGroup()) then return end
+local specGroup
+function _NS:ACTIVE_TALENT_GROUP_CHANGED(event, active)
+	if(specGroup == active) then return end
 
-	talentGroup = GetActiveTalentGroup()
+	specGroup = active
 	self:PLAYER_TALENT_UPDATE()
 end
 _NS:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
