@@ -233,8 +233,10 @@ end
 _NS:RegisterEvent"ADDON_LOADED"
 
 function _NS:PLAYER_TALENT_UPDATE()
-	local _, specName = GetSpecializationInfo(GetSpecialization())
+	local spec = GetSpecialization()
+	if(not spec) then return end
 
+	local _, specName = GetSpecializationInfo(spec)
 	if(specName) then
 		self:UnregisterEvent'PLAYER_TALENT_UPDATE'
 
