@@ -20,20 +20,35 @@ local states = {
 	'bar5|[bar:5]',
 	'bar6|[bar:6]',
 
-	'stealth|[bonusbar:1,stealth]',
+	'stealth|[form:1]',
 	'shadowDance|[form:3]',
 
-	'shadow|[bonusbar:1]',
+	'shadow|[stance:1]',
 
 	'bear|[form:1]',
 	'cat|[form:3]',
-	'moonkintree|[form:5]',
+	'moonkin|[form:5]',
+
+	-- Currently no way to detect if it's Prowl or other forms of stealth (Shadowmeld)
+	'prowl|[form:3,stealth]',
 
 	'battle|[stance:1]',
 	'defensive|[stance:2]',
 	'berserker|[stance:3]',
 
-	'demon|[form:2]',
+	'demon|[form:1]',
+
+	--[[
+		Monk information:
+
+		If specced Windwalker, the approperiate stance is "Fierce Tiger" on [stance:1], and is the only stance
+		If specced Mistweaver, the approperiate stance is "Wise Serpent" on [stance:2], and also has "Fierce Tiger" on [stance:2]
+		If specced Brewmaster, the approperiate stance is "Sturdy Ox" on [stance:1], and also has "Fierce Tiger" on [stance:2]
+
+		The below names are most likely temporary
+	--]]
+	'mainStance|[stance:1]',
+	'altStance|[stance:2]',
 }
 -- it won't change anyway~
 local numStates = #states
