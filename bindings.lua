@@ -11,7 +11,10 @@ local states = {
 	'ctrl|[mod:ctrl]',
 	'shift|[mod:shift]',
 
-	'possess|[vehicleui]',
+	'vehicle|[vehicleui]',
+	'possess|[possessbar]',
+	'override|[overridebar]',
+	'petbattle|[petbattle]',
 
 	-- No bar1 as that's our default anyway.
 	'bar2|[bar:2]',
@@ -133,8 +136,16 @@ local createButton = function(key)
 	]])
 
 	if(tonumber(key)) then
+		btn:SetAttribute('ob-vehicle-type', 'action')
+		btn:SetAttribute('ob-vehicle-attribute', 'action,' .. (key + 132))
+
 		btn:SetAttribute('ob-possess-type', 'action')
 		btn:SetAttribute('ob-possess-attribute', 'action,' .. (key + 132))
+
+		btn:SetAttribute('ob-override-type', 'action')
+		btn:SetAttribute('ob-override-attribute', 'action,' .. (key + 156))
+
+		-- No idea how to deal with pet battles, as they don't use action IDs
 	end
 
 	_BUTTONS[key] = btn
@@ -144,7 +155,7 @@ end
 local clearButton = function(btn)
 	for i=1, numStates do
 		local key = string.split('|', states[i], 2)
-		if(key ~= 'possess') then
+		if(key ~= 'vehicle' and key ~= 'possess' and key ~= 'override') then
 			btn:SetAttribute(string.format('ob-%s-type', key), nil)
 			key = (key == 'macro' and 'macrotext') or key
 			btn:SetAttribute(string.format('ob-%s-attribute', key), nil)
@@ -201,7 +212,7 @@ function _NS:LoadBindings(name)
 		local _states = ''
 		for i=1, numStates do
 			local key,state = string.split('|', states[i], 2)
-			if(bindings[key] or key == 'possess') then
+			if(bindings[key] or key == 'vehicle' or key == 'possess' or key == 'override') then
 				_states = _states .. state .. key .. ';'
 			end
 		end
