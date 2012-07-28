@@ -233,7 +233,7 @@ end)
 function _NS:ADDON_LOADED(event, addon)
 	-- For the possess madness.
 	if(addon == _NAME) then
-		for i=0,9 do
+		for i=1,6 do
 			createButton(i)
 		end
 
